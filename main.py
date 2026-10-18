@@ -1,63 +1,61 @@
-import os, asyncio, datetime, random
-from telegram import Bot
+import os, asyncio, datetime
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
 
 TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL = "@IndiaJobAlertTamil"
 
-# 22 CATEGORY - HOURLY ROTATE
 CATEGORIES = [
-    {"cat": "TNPSC", "emoji": "📚", "link": "https://www.tnpsc.gov.in/"},
-    {"cat": "UPSC", "emoji": "🏛️", "link": "https://www.upsc.gov.in/"},
-    {"cat": "SSC", "emoji": "📝", "link": "https://ssc.nic.in/"},
-    {"cat": "Railway Jobs", "emoji": "🚂", "link": "https://indianrailways.gov.in/"},
-    {"cat": "Bank Jobs", "emoji": "🏦", "link": "https://www.ibps.in/"},
-    {"cat": "Defence / Army", "emoji": "🪖", "link": "https://joinindianarmy.nic.in/"},
-    {"cat": "Police Jobs", "emoji": "👮", "link": "https://tnusrb.tn.gov.in/"},
-    {"cat": "Teaching Jobs", "emoji": "👩‍🏫", "link": "https://www.tn.gov.in/"},
-    {"cat": "Engineering", "emoji": "⚙️", "link": "https://www.tnpsc.gov.in/"},
-    {"cat": "IT / Software", "emoji": "💻", "link": "https://www.tcs.com/careers"},
-    {"cat": "TN Govt Jobs", "emoji": "🏢", "link": "https://www.tn.gov.in/"},
-    {"cat": "Central Govt", "emoji": "🇮🇳", "link": "https://www.india.gov.in/"},
-    {"cat": "10th Pass Jobs", "emoji": "✅", "link": "https://www.tnpsc.gov.in/"},
-    {"cat": "12th Pass Jobs", "emoji": "✅", "link": "https://ssc.nic.in/"},
-    {"cat": "Degree Jobs", "emoji": "🎓", "link": "https://www.tnpsc.gov.in/"},
-    {"cat": "Work From Home", "emoji": "🏠", "link": "https://www.naukri.com/wfh-jobs"},
-    {"cat": "Private Jobs", "emoji": "💼", "link": "https://www.naukri.com/"},
-    {"cat": "Fresher Jobs", "emoji": "🆕", "link": "https://www.freshersworld.com/"},
-    {"cat": "Medical / Nurse", "emoji": "🏥", "link": "https://www.tn.gov.in/"},
-    {"cat": "Office Jobs", "emoji": "🖥️", "link": "https://www.naukri.com/"},
-    {"cat": "Part Time Jobs", "emoji": "⏰", "link": "https://www.indeed.co.in/"},
-    {"cat": "Abroad Jobs", "emoji": "✈️", "link": "https://www.naukri.com/abroad-jobs"},
+    {"cat": "TNPSC", "emoji": "📚", "title": "TNPSC Group 4 & Group 2 Recruitment", "link": "https://www.tnpsc.gov.in/"},
+    {"cat": "UPSC", "emoji": "🏛️", "title": "UPSC Civil Services 2026", "link": "https://www.upsc.gov.in/"},
+    {"cat": "SSC", "emoji": "📝", "title": "SSC CGL & CHSL 2026 Notification", "link": "https://ssc.nic.in/"},
+    {"cat": "Railway Jobs", "emoji": "🚂", "title": "Railway RRB NTPC & Group D", "link": "https://indianrailways.gov.in/"},
+    {"cat": "Bank Jobs", "emoji": "🏦", "title": "IBPS PO / Clerk & SBI Recruitment", "link": "https://www.ibps.in/"},
+    {"cat": "Defence", "emoji": "🪖", "title": "Indian Army & Navy Agniveer", "link": "https://joinindianarmy.nic.in/"},
+    {"cat": "Police Jobs", "emoji": "👮", "title": "TNUSRB Police Constable & SI", "link": "https://tnusrb.tn.gov.in/"},
+    {"cat": "Teaching", "emoji": "👩‍🏫", "title": "TRB & TET Teachers Recruitment", "link": "https://trb.tn.gov.in/"},
+    {"cat": "Engineering", "emoji": "⚙️", "title": "TNEB & ISRO Engineer Vacancy", "link": "https://www.tnebnet.org/"},
+    {"cat": "IT Jobs", "emoji": "💻", "title": "TCS, Infosys & Wipro IT Jobs", "link": "https://www.naukri.com/it-jobs"},
+    {"cat": "TN Govt", "emoji": "🏢", "title": "Tamil Nadu Govt Jobs Today", "link": "https://www.tn.gov.in/"},
+    {"cat": "Central Govt", "emoji": "🇮🇳", "title": "Central Govt Jobs All India", "link": "https://www.india.gov.in/"},
+    {"cat": "10th Pass", "emoji": "✅", "title": "10th Pass Govt Jobs", "link": "https://www.tnpsc.gov.in/"},
+    {"cat": "12th Pass", "emoji": "✅", "title": "12th Pass Railway & SSC Jobs", "link": "https://ssc.nic.in/"},
+    {"cat": "Degree Jobs", "emoji": "🎓", "title": "Degree Holders Govt Jobs", "link": "https://www.tnpsc.gov.in/"},
+    {"cat": "Work From Home", "emoji": "🏠", "title": "WFH Jobs for Freshers", "link": "https://www.naukri.com/wfh-jobs"},
+    {"cat": "Private Jobs", "emoji": "💼", "title": "Private Company Jobs Chennai", "link": "https://www.naukri.com/"},
+    {"cat": "Fresher Jobs", "emoji": "🆕", "title": "Fresher Jobs 2026 Tamil Nadu", "link": "https://www.freshersworld.com/"},
+    {"cat": "Medical", "emoji": "🏥", "title": "TN Medical & Nurse Recruitment", "link": "https://www.tn.gov.in/"},
+    {"cat": "Office Jobs", "emoji": "🖥️", "title": "Office Assistant & Clerk Jobs", "link": "https://www.naukri.com/"},
+    {"cat": "Part Time", "emoji": "⏰", "title": "Part Time Evening Jobs", "link": "https://www.indeed.co.in/"},
+    {"cat": "Abroad Jobs", "emoji": "✈️", "title": "Gulf & Abroad Jobs for Indians", "link": "https://www.naukri.com/abroad-jobs"},
 ]
 
 async def main():
     bot = Bot(token=TOKEN)
-    now = datetime.datetime.now()
-    hour = now.hour
-    # Hour vachu category pick pannum
+    hour = datetime.datetime.now().hour
     job = CATEGORIES[hour % 22]
     
-    msg = f"""{job['emoji']} **{job['cat']} Latest Vacancy 2026** {job['emoji']}
+    msg = f"""{job['emoji']} **{job['title']}** {job['emoji']}
+**Category: {job['cat']}**
 
-📌 வேலை இடம்: தமிழ்நாடு / இந்தியா முழுவதும்
-📌 கல்வித் தகுதி: {job['cat']} பொறுத்து மாறுபடும்
-📌 வயது வரம்பு: பதவியைப் பொறுத்து மாறுபடும்
-📌 விண்ணப்பக் கடைசி தேதி: விரைவில் அறிவிக்கப்படும்
+📌 **வேலை இடம்:** தமிழ்நாடு / இந்தியா முழுவதும்
+📌 **கல்வித் தகுதி:** {job['cat']} தகுதிக்கேற்ப
+📌 **வயது:** 18 - 40 வரை
+📌 **சம்பளம்:** ₹18,000 - ₹65,000
 
-🎯 யாரெல்லாம் Apply பண்ணலாம்?
-✅ 10th Pass
-✅ 12th Pass
-✅ Degree முடித்தவர்கள்
+🎯 **யார் Apply பண்ணலாம்?**
+✅ 10th / 12th / Degree
 
-⚠️ குறிப்பு: அதிகாரப்பூர்வ அறிவிப்பைப் பார்த்துத் தகுதியை உறுதிப்படுத்தவும்.
+⚠️ அதிகாரப்பூர்வ அறிவிப்பை பார்த்து Apply பண்ணுங்க!
 
-🔗 Apply Link: {job['link']}
-
-📢 Job Updates பெற நம்ம Channel-ஐ Join பண்ணுங்க!
-👉 @IndiaJobAlertTamil
-🔥 JobSpark India 🇮🇳 Your Dream Job Starts Here!
+👇 **கீழே உள்ள Button-ஐ Click பண்ணி Apply பண்ணுங்க**
 """
-    await bot.send_message(chat_id=CHANNEL, text=msg)
-    print(f"Posted: {job['cat']} - Hour {hour}")
+    keyboard = [
+        [InlineKeyboardButton(f"🔗 {job['cat']} Apply Now", url=job['link'])],
+        [InlineKeyboardButton("📢 Join Our Channel", url="https://t.me/IndiaJobAlertTamil")]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    
+    await bot.send_message(chat_id=CHANNEL, text=msg, reply_markup=markup, parse_mode="Markdown")
+    print(f"Posted with Button: {job['cat']}")
 
 asyncio.run(main())
